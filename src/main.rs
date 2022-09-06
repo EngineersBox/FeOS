@@ -13,8 +13,10 @@ pub extern "C" fn _start() -> ! {
 
     fe_os::init();
 
-    // Invoke breakpoint exception
-    x86_64::instructions::interrupts::int3();
+    // Page fault
+    unsafe {
+        *(0xdeadbeef as *mut u64) = 42;
+    };
 
     #[cfg(test)]
     test_main();
