@@ -13,5 +13,5 @@ cargo bootimage
 ## Run
 
 ```shell
-./run.sh
+cargo run
 ```
