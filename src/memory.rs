@@ -151,7 +151,7 @@ impl BootInfoFrameAllocator {
 unsafe impl FrameAllocator<Size4KiB> for BootInfoFrameAllocator {
 
     fn allocate_frame(&mut self) -> Option<PhysFrame> {
-        // No named existentially types supported in rust, so we can't store the iterator as a
+        // No named existential types supported in rust, so we can't store the iterator as a
         // struct field
         let frame = self.usable_frames().nth(self.next);
         self.next += 1;
