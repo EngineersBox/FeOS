@@ -18,10 +18,7 @@ pub extern "C" fn _start() -> ! {
     test_main();
 
     println!("It did not crash!");
-    loop {
-        use fe_os::print;
-        print!("-");
-    }
+    fe_os::hlt_loop();
 }
 
 /// This function is called on panic.
