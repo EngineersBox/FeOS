@@ -13,15 +13,11 @@ pub extern "C" fn _start() -> ! {
 
     fe_os::init();
 
-    fn stack_overflow() {
-        stack_overflow(); // for each recursion, the return address is pushed
-    }
-    stack_overflow();
 
     #[cfg(test)]
     test_main();
 
-    println!("Execution proceeded");
+    println!("It did not crash!");
     loop {}
 }
 
@@ -30,7 +26,7 @@ pub extern "C" fn _start() -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-    loop {}
+    fe_os::hlt_loop();
 }
 
 #[cfg(test)]
