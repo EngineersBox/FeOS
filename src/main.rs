@@ -6,15 +6,25 @@
 
 use core::panic::PanicInfo;
 use fe_os::println;
+use bootloader::{BootInfo, entry_point};
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+entry_point!(kernel_main);
+
+fn kernel_main(boot_info: &'static BootInfo) -> ! {
+    use fe_os::memory::active_level_4_table;
+    use x86_64::VirtAddr;
+
     println!("Hello World{}", "!");
-
     fe_os::init();
 
-    let ptr = 0xdeadbeaf as *mut u32;
-    unsafe { *ptr = 42; }
+    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+    let l4_table = unsafe { active_level_4_table(phys_mem_offset) };
+
+    for (i, entry) in l4_table.iter().enumerate() {
+        if !entry.is_unused() {
+            println!("L4 Entry {}: {:?}", i, entry);
+        }
+    }
 
     #[cfg(test)]
     test_main();
