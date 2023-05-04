@@ -8,12 +8,16 @@ use core::panic::PanicInfo;
 use fe_os::println;
 use bootloader::{BootInfo, entry_point};
 
+use alloc::boxed::Box;
+
+extern crate alloc;
+
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    use fe_os::memory;
-    use fe_os::memory::BootInfoFrameAllocator;
-    use x86_64::{structures::paging::Page, VirtAddr};
+    use fe_os::memory::{self, BootInfoFrameAllocator};
+    use fe_os::allocator;
+    use x86_64::VirtAddr;
 
     println!("Hello World{}", "!");
     fe_os::init();
@@ -24,13 +28,9 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
         BootInfoFrameAllocator::init(&boot_info.memory_map)
     };
 
-    // map an unused page
-    let page = Page::containing_address(VirtAddr::new(0));
-    memory::create_example_mapping(page, &mut mapper, &mut frame_allocator);
+    allocator::init_heap(&mut mapper, &mut frame_allocator).expect("Heap initialisation failed");
 
-    // write the string `New!` to the screen through the new mapping
-    let page_ptr: *mut u64 = page.start_address().as_mut_ptr();
-    unsafe { page_ptr.offset(400).write_volatile(0x_f021_f077_f065_f04e)};
+    let x = Box::new(42);
 
     #[cfg(test)]
     test_main();
