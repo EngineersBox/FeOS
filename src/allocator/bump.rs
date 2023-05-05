@@ -45,7 +45,7 @@ unsafe impl GlobalAlloc for Locked<BumpAllocator> {
         };
 
         if alloc_end > bump.heap_end {
-            ptr::null_mut()
+            ptr::null_mut() // Out of memory
         } else {
             bump.next = alloc_end;
             bump.allocations += 1;
