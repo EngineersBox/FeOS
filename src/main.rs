@@ -5,7 +5,7 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use fe_os::{println, task::{Task, simple_executor::SimpleExecutor}};
+use fe_os::{println, task::{Task, simple_executor::SimpleExecutor, keyboard}};
 use bootloader::{BootInfo, entry_point};
 
 use alloc::{boxed::Box, vec, vec::Vec, rc::Rc};
@@ -39,12 +39,14 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("Heap initialisation failed");
 
-    let mut executor = SimpleExecutor::new();
-    executor.spawn(Task::new(example_task()));
-    executor.run();
-
     #[cfg(test)]
     test_main();
+
+
+    let mut executor = SimpleExecutor::new();
+    executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(keyboard::print_keypresses()));
+    executor.run();
 
     println!("It did not crash!");
     fe_os::hlt_loop();
