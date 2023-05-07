@@ -64,6 +64,7 @@ impl Executor {
     fn sleep_if_idle(&self) {
         use x86_64::instructions::interrupts;
 
+        // Ensure no interrup-over-interrupt race conditions occur
         interrupts::disable();
         if self.task_queue.is_empty() {
             interrupts::enable_and_hlt();
