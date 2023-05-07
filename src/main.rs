@@ -5,10 +5,16 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use fe_os::{println, task::{Task, simple_executor::SimpleExecutor, keyboard}};
+use fe_os::{
+    println,
+    task::{
+        Task,
+        simple_executor::SimpleExecutor,
+        executor::Executor,
+        keyboard
+    }
+};
 use bootloader::{BootInfo, entry_point};
-
-use alloc::{boxed::Box, vec, vec::Vec, rc::Rc};
 
 extern crate alloc;
 
@@ -43,7 +49,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     test_main();
 
 
-    let mut executor = SimpleExecutor::new();
+    let mut executor = Executor::new();
     executor.spawn(Task::new(example_task()));
     executor.spawn(Task::new(keyboard::print_keypresses()));
     executor.run();
