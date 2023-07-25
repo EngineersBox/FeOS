@@ -20,7 +20,7 @@ use bump::BumpAllocator;
 use linked_list::LinkedListAllocator;
 use fixed_size_block::FixedSizeBlockAllocator;
 
-pub const HEAP_START: usize = 0x_4444_4444_0000;
+pub const HEAP_START: usize = 0x_4444_4444_0000; // Verify heap offset start point
 pub const HEAP_SIZE: usize = 100 * 1024; // 100 KiB
 
 #[global_allocator]
@@ -90,6 +90,7 @@ impl<A> Locked<A> {
 /// Align the given address `addr` upwards to alignment `align`.
 ///
 /// Requires that `align` is a power of two.
+#[inline(always)]
 fn align_up(addr: usize, align: usize) -> usize {
     (addr + align - 1) & !(align - 1)
 }
